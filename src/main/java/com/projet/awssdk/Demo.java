@@ -20,15 +20,18 @@ public class Demo {
 
         EC2Manager ec2Manager = clientsManager.getEC2Europe();
         S3Manager s3Manager = clientsManager.getS3Europe();
+        IAMManager iamManager = clientsManager.getIAM();
 
         if (args.length > 0) {
             conquer(s3Manager);
         } else {
-            command(ec2Manager, s3Manager);
+            command(ec2Manager, s3Manager, iamManager);
         }
     }
 
-    private static void command(EC2Manager ec2Manager, S3Manager s3Manager) throws FileNotFoundException {
+    private static void command(EC2Manager ec2Manager, S3Manager s3Manager, IAMManager iamManager) throws IOException {
+        iamManager.setupSecurity();
+
         String upload = s3Manager.upload(
                 new FileInputStream(JAR_SOURCE),
                 BUCKET, JAR_NAME, JAR_TYPE);

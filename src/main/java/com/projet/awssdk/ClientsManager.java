@@ -6,6 +6,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 
@@ -36,5 +37,12 @@ public class ClientsManager {
         ec2.setRegion(Region.getRegion(Regions.EU_WEST_1));
 
         return new EC2Manager(ec2);
+    }
+
+    public IAMManager getIAM() {
+        AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(credentials);
+        iam.setRegion(Region.getRegion(Regions.EU_WEST_1));
+
+        return new IAMManager(iam);
     }
 }
