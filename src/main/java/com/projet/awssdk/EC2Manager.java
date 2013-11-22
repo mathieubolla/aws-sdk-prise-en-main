@@ -3,6 +3,7 @@ package com.projet.awssdk;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
+import com.amazonaws.services.ec2.model.ShutdownBehavior;
 
 import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
@@ -16,11 +17,12 @@ public class EC2Manager {
     public void run(String script, int machineCount) {
         ec2.runInstances(
                 new RunInstancesRequest()
-                .withImageId("ami-c7c0d6b3")
-                .withInstanceType(InstanceType.T1Micro)
-                .withMaxCount(machineCount)
-                .withMinCount(machineCount)
-                .withUserData(printBase64Binary(script.getBytes()))
+                        .withImageId("ami-c7c0d6b3")
+                        .withInstanceType(InstanceType.T1Micro)
+                        .withMaxCount(machineCount)
+                        .withMinCount(machineCount)
+                        .withInstanceInitiatedShutdownBehavior(ShutdownBehavior.Terminate)
+                        .withUserData(printBase64Binary(script.getBytes()))
         );
     }
 }
