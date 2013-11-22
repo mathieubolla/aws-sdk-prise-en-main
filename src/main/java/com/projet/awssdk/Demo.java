@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class Demo {
+    public static final String BUCKET = "code.projet.com";
+
     public static void main(String... args) throws IOException {
         ClientsManager clientsManager = new ClientsManager();
 
@@ -11,6 +13,6 @@ public class Demo {
 
         s3.upload(
                 new ByteArrayInputStream("Hello, world!".getBytes()),
-                "code.projet.com", "hello.txt", "text/plain");
+                BUCKET, "hello.txt", "text/plain");
     }
 }

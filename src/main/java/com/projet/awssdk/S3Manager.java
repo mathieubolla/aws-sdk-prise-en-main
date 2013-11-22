@@ -29,6 +29,10 @@ public class S3Manager {
     public void upload(InputStream content, String bucket, String key,
                        String contentType) {
 
+        if (!s3.doesBucketExist(bucket)) {
+            s3.createBucket(bucket);
+        }
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(contentType);
 
