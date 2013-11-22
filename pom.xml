@@ -8,5 +8,11 @@
     <artifactId>aws-sdk-prise-en-main</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    
+    <dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+    </dependencies>
 </project>
