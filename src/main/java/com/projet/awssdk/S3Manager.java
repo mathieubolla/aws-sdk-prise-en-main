@@ -2,7 +2,9 @@ package com.projet.awssdk;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,5 +24,14 @@ public class S3Manager {
         }
 
         return bucketsNames;
+    }
+
+    public void upload(InputStream content, String bucket, String key,
+                       String contentType) {
+
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType);
+
+        s3.putObject(bucket, key, content, objectMetadata);
     }
 }

@@ -1,5 +1,6 @@
 package com.projet.awssdk;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class Demo {
@@ -8,8 +9,8 @@ public class Demo {
 
         S3Manager s3 = clientsManager.getS3Europe();
 
-        for (String bucketName : s3.getBucketsNames()) {
-            System.out.println(bucketName);
-        }
+        s3.upload(
+                new ByteArrayInputStream("Hello, world!".getBytes()),
+                "code.projet.com", "hello.txt", "text/plain");
     }
 }
