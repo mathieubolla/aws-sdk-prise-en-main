@@ -10,6 +10,7 @@ import java.util.List;
 
 public class S3Manager {
     private final AmazonS3 s3;
+    private final static String S3_EUROPE_ENDPOINT = "https://s3-eu-west-1.amazonaws.com";
 
     public S3Manager(AmazonS3 s3) {
         this.s3 = s3;
@@ -26,7 +27,7 @@ public class S3Manager {
         return bucketsNames;
     }
 
-    public void upload(InputStream content, String bucket, String key,
+    public String upload(InputStream content, String bucket, String key,
                        String contentType) {
 
         if (!s3.doesBucketExist(bucket)) {
@@ -37,5 +38,7 @@ public class S3Manager {
         objectMetadata.setContentType(contentType);
 
         s3.putObject(bucket, key, content, objectMetadata);
+
+        return S3_EUROPE_ENDPOINT + "/" + bucket + "/" + key;
     }
 }
