@@ -22,10 +22,10 @@ public class ClientsManager {
         credentials = new PropertiesCredentials(credentialsFile);
     }
 
-    public AmazonS3 getS3Europe() {
+    public S3Manager getS3Europe() {
         AmazonS3 s3 = new AmazonS3Client(credentials);
         s3.setRegion(Region.getRegion(Regions.EU_WEST_1));
 
-        return s3;
+        return new S3Manager(s3);
     }
 }
