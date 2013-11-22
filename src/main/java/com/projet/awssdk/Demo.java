@@ -1,18 +1,16 @@
 package com.projet.awssdk;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class Demo {
     public static final String BUCKET = "code.projet.com";
+    public static final int MACHINE_COUNT = 1;
 
     public static void main(String... args) throws IOException {
         ClientsManager clientsManager = new ClientsManager();
 
-        S3Manager s3 = clientsManager.getS3Europe();
+        EC2Manager ec2Manager = clientsManager.getEC2Europe();
 
-        s3.upload(
-                new ByteArrayInputStream("Hello, world!".getBytes()),
-                BUCKET, "hello.txt", "text/plain");
+        ec2Manager.run("#!/bin/sh\nshutdown -h now", MACHINE_COUNT);
     }
 }
