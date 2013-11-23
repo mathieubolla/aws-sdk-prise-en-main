@@ -12,6 +12,8 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,5 +58,12 @@ public class ClientsManager {
         iam.setRegion(Region.getRegion(Regions.EU_WEST_1));
 
         return new IAMManager(iam);
+    }
+
+    public SQSManager getSQSEurope() {
+        AmazonSQS sqs = new AmazonSQSClient(credentials);
+        sqs.setRegion(Region.getRegion(Regions.EU_WEST_1));
+
+        return new SQSManager(sqs);
     }
 }

@@ -14,21 +14,25 @@ public class Demo {
     public static final int MACHINE_COUNT = 1;
     public static final String CLASS_NAME = Demo.class.getCanonicalName();
 
+    public static final String COMMANDS_QUEUE = "commands";
+
     public static void main(String... args) throws IOException {
         ClientsManager clientsManager = new ClientsManager();
 
         EC2Manager ec2Manager = clientsManager.getEC2Europe();
         S3Manager s3Manager = clientsManager.getS3Europe();
         IAMManager iamManager = clientsManager.getIAM();
+        SQSManager sqsManager = clientsManager.getSQSEurope();
 
         if (args.length > 0) {
             conquer(s3Manager);
         } else {
-            command(ec2Manager, s3Manager, iamManager);
+            command(ec2Manager, s3Manager, iamManager, sqsManager);
         }
     }
 
-    private static void command(EC2Manager ec2Manager, S3Manager s3Manager, IAMManager iamManager) throws IOException {
+    private static void command(EC2Manager ec2Manager, S3Manager s3Manager,
+                                IAMManager iamManager, SQSManager sqsManager) throws IOException {
         iamManager.cleanupSecurity();
         String instanceProfileName = iamManager.setupSecurity(BUCKET);
 
@@ -49,6 +53,8 @@ public class Demo {
 
         ec2Manager.run(
                 script, MACHINE_COUNT, instanceProfileName);
+
+        sqsManager.sendMessage("Hey, zombies!", COMMANDS_QUEUE);
     }
 
     private static void conquer(S3Manager s3Manager) {
