@@ -32,12 +32,16 @@ public class Demo {
         iamManager.cleanupSecurity();
         String instanceProfileName = iamManager.setupSecurity(BUCKET);
 
-        String upload = s3Manager.upload(
+        s3Manager.upload(
                 new FileInputStream(JAR_SOURCE),
                 BUCKET, JAR_NAME, JAR_TYPE);
 
         String script = "#!/bin/sh\n" +
-                "curl \"" + upload + "\" > " + JAR_NAME + "\n" +
+                // Download bootstraper
+                "curl \"http://code.mathieu-bolla.com/maven/snapshot/aws-sdk-bootstraper/aws-sdk-bootstraper/1.0-SNAPSHOT/aws-sdk-bootstraper-1.0-20131018.100941-1-jar-with-dependencies.jar\" > bootstraper.jar\n" +
+                // Use it to safely download private JAR_NAME from BUCKET
+                "java -cp bootstraper.jar com.mathieu_bolla.bootstraper.Bootstraper " + BUCKET + " " + JAR_NAME + " " + JAR_NAME + "\n" +
+                // Run from JAR_NAME
                 "java -cp " + JAR_NAME + " " + CLASS_NAME + " run\n" +
                 "shutdown -h now";
 
