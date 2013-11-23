@@ -34,8 +34,13 @@ public class Demo {
 
     private static void command(EC2Manager ec2Manager, S3Manager s3Manager,
                                 IAMManager iamManager, SQSManager sqsManager) throws IOException {
+
+        String commandsQueueArn = sqsManager.create(COMMANDS_QUEUE);
+        String conquestQueueArn = sqsManager.create(CONQUESTS_QUEUE);
+
         iamManager.cleanupSecurity();
-        String instanceProfileName = iamManager.setupSecurity(BUCKET);
+        String instanceProfileName =
+                iamManager.setupSecurity(BUCKET, commandsQueueArn, conquestQueueArn);
 
         s3Manager.upload(
                 new FileInputStream(JAR_SOURCE),

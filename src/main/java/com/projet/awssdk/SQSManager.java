@@ -61,20 +61,25 @@ public class SQSManager {
     }
 
     private String getQueueUrl(String topic) {
-        if (exists(topic)) {
-            create(topic);
-        }
-
         return
                 sqs.getQueueUrl(
                         new GetQueueUrlRequest().withQueueName(topic)
                 ).getQueueUrl();
     }
 
-    private void create(String topic) {
-        sqs.createQueue(new CreateQueueRequest()
-                .withQueueName(topic)
-        );
+    public String create(String topic) {
+        if (!exists(topic)) {
+            sqs.createQueue(new CreateQueueRequest()
+                    .withQueueName(topic)
+            );
+        }
+
+        return sqs.getQueueAttributes(
+                new GetQueueAttributesRequest()
+                        .withAttributeNames("QueueArn")
+                        .withQueueUrl(getQueueUrl(topic)))
+                .getAttributes()
+                .get("QueueArn");
     }
 
     private boolean exists(String topic) {

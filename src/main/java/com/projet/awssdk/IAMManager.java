@@ -4,6 +4,7 @@ import com.amazonaws.auth.policy.Policy;
 import com.amazonaws.auth.policy.Resource;
 import com.amazonaws.auth.policy.Statement;
 import com.amazonaws.auth.policy.actions.S3Actions;
+import com.amazonaws.auth.policy.actions.SQSActions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.model.*;
 import com.amazonaws.auth.policy.*;
@@ -17,7 +18,8 @@ public class IAMManager {
         this.iam = iam;
     }
 
-    public String setupSecurity(String bucket) throws IOException {
+    public String setupSecurity(String bucket, String input,
+                                String output) throws IOException {
         iam.createRole(new CreateRoleRequest()
                 .withAssumeRolePolicyDocument(
                         getAssumeRolePolicy().toJson()
@@ -43,6 +45,14 @@ public class IAMManager {
                 )
                 .withRoleName("runner")
                 .withPolicyName("resultUploader")
+        );
+
+        iam.putRolePolicy(new PutRolePolicyRequest()
+                .withPolicyDocument(
+                        getRadioOperatorPolicy(input, output).toJson()
+                )
+                .withRoleName("runner")
+                .withPolicyName("radioOperator")
         );
 
         iam.createInstanceProfile(new CreateInstanceProfileRequest()
@@ -91,6 +101,28 @@ public class IAMManager {
                 );
     }
 
+    private Policy getRadioOperatorPolicy(String inputArn, String outputArn) {
+        return new Policy().withStatements(
+                new Statement(Statement.Effect.Allow)
+                        .withActions(
+                                SQSActions.GetQueueUrl,
+                                SQSActions.ReceiveMessage,
+                                SQSActions.DeleteMessage,
+                                SQSActions.ChangeMessageVisibility
+                        )
+                        .withId("Stmt3")
+                        .withResources(new Resource(inputArn)),
+
+                new Statement(Statement.Effect.Allow)
+                        .withActions(
+                                SQSActions.GetQueueUrl,
+                                SQSActions.SendMessage
+                        )
+                        .withId("Stmt4")
+                        .withResources(new Resource(outputArn))
+        );
+    }
+
     public void cleanupSecurity() {
         try {
             iam.removeRoleFromInstanceProfile(new RemoveRoleFromInstanceProfileRequest()
@@ -128,6 +160,15 @@ public class IAMManager {
         }
 
         try {
+            iam.deleteRolePolicy(new DeleteRolePolicyRequest()
+                    .withPolicyName("radioOperator")
+                    .withRoleName("runner")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
             iam.deleteRole(new DeleteRoleRequest()
                     .withRoleName("runner")
             );
@@ -135,4 +176,5 @@ public class IAMManager {
             e.printStackTrace();
         }
     }
+
 }
