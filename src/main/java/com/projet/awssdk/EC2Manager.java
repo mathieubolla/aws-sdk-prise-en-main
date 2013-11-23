@@ -1,6 +1,7 @@
 package com.projet.awssdk;
 
 import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.model.IamInstanceProfileSpecification;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.ShutdownBehavior;
@@ -14,14 +15,19 @@ public class EC2Manager {
         this.ec2 = ec2;
     }
 
-    public void run(String script, int machineCount) {
+    public void run(String script, int machineCount,
+                    String instanceProfileName) {
         ec2.runInstances(
                 new RunInstancesRequest()
                         .withImageId("ami-c7c0d6b3")
                         .withInstanceType(InstanceType.T1Micro)
                         .withMaxCount(machineCount)
                         .withMinCount(machineCount)
-                        .withInstanceInitiatedShutdownBehavior(ShutdownBehavior.Terminate)
+                        .withInstanceInitiatedShutdownBehavior(
+                                ShutdownBehavior.Terminate)
+                        .withIamInstanceProfile(
+                                new IamInstanceProfileSpecification()
+                                        .withArn(instanceProfileName))
                         .withUserData(printBase64Binary(script.getBytes()))
         );
     }

@@ -2,7 +2,6 @@ package com.projet.awssdk;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
@@ -30,7 +29,7 @@ public class Demo {
     }
 
     private static void command(EC2Manager ec2Manager, S3Manager s3Manager, IAMManager iamManager) throws IOException {
-        iamManager.setupSecurity();
+        String instanceProfileName = iamManager.setupSecurity(BUCKET);
 
         String upload = s3Manager.upload(
                 new FileInputStream(JAR_SOURCE),
@@ -44,7 +43,7 @@ public class Demo {
         System.out.println("Will run :\n" + script + "\n on "+MACHINE_COUNT + "machines");
 
         ec2Manager.run(
-                script, MACHINE_COUNT);
+                script, MACHINE_COUNT, instanceProfileName);
     }
 
     private static void conquer(S3Manager s3Manager) {
