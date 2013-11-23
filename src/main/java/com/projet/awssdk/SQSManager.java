@@ -61,10 +61,28 @@ public class SQSManager {
     }
 
     private String getQueueUrl(String topic) {
+        if (exists(topic)) {
+            create(topic);
+        }
+
         return
                 sqs.getQueueUrl(
                         new GetQueueUrlRequest().withQueueName(topic)
                 ).getQueueUrl();
+    }
+
+    private void create(String topic) {
+        sqs.createQueue(new CreateQueueRequest()
+                .withQueueName(topic)
+        );
+    }
+
+    private boolean exists(String topic) {
+        return sqs.listQueues(
+                new ListQueuesRequest()
+                        .withQueueNamePrefix(topic))
+                .getQueueUrls()
+                .contains(topic);
     }
 
     public static interface TransactionalProcess {
