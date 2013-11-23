@@ -90,4 +90,49 @@ public class IAMManager {
                                 )
                 );
     }
+
+    public void cleanupSecurity() {
+        try {
+            iam.removeRoleFromInstanceProfile(new RemoveRoleFromInstanceProfileRequest()
+                    .withInstanceProfileName("runnerProfile")
+                    .withRoleName("runner")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            iam.deleteInstanceProfile(new DeleteInstanceProfileRequest()
+                    .withInstanceProfileName("runnerProfile")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            iam.deleteRolePolicy(new DeleteRolePolicyRequest()
+                    .withPolicyName("resultUploader")
+                    .withRoleName("runner")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            iam.deleteRolePolicy(new DeleteRolePolicyRequest()
+                    .withPolicyName("codeDownloader")
+                    .withRoleName("runner")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            iam.deleteRole(new DeleteRoleRequest()
+                    .withRoleName("runner")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

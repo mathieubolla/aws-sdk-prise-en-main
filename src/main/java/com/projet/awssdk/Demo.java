@@ -29,6 +29,7 @@ public class Demo {
     }
 
     private static void command(EC2Manager ec2Manager, S3Manager s3Manager, IAMManager iamManager) throws IOException {
+        iamManager.cleanupSecurity();
         String instanceProfileName = iamManager.setupSecurity(BUCKET);
 
         String upload = s3Manager.upload(
