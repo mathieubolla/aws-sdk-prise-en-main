@@ -1,7 +1,10 @@
 package com.projet.awssdk;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.PropertiesCredentials;
+import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
@@ -14,15 +17,24 @@ import java.io.File;
 import java.io.IOException;
 
 public class ClientsManager {
-    private final AWSCredentials credentials;
+    private final AWSCredentialsProvider credentials;
 
     public ClientsManager() throws IOException {
-        File credentialsFile = new File(
-                new File(System.getProperty("user.home"), ".ec2"),
-                "credentials.properties"
-        );
+        credentials = getAwsCredentials();
+    }
 
-        credentials = new PropertiesCredentials(credentialsFile);
+    private static AWSCredentialsProvider getAwsCredentials() {
+        try {
+            File credentialsFile = new File(
+                    new File(System.getProperty("user.home"), ".ec2"),
+                    "credentials.properties"
+            );
+
+            return new StaticCredentialsProvider(
+                    new PropertiesCredentials(credentialsFile));
+        } catch (IOException e) {
+            return new DefaultAWSCredentialsProviderChain();
+        }
     }
 
     public S3Manager getS3Europe() {
