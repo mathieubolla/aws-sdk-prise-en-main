@@ -55,12 +55,20 @@ public class Demo {
                 "java -cp " + JAR_NAME + " " + CLASS_NAME + " run\n" +
                 "shutdown -h now";
 
-        System.out.println("Will run :\n" + script + "\n on "+MACHINE_COUNT + "machines");
+        System.out.println("Will run :\n" + script + "\n on "+MACHINE_COUNT + " machines");
 
         ec2Manager.run(
                 script, MACHINE_COUNT, instanceProfileName);
 
         sqsManager.sendMessage("Hey, zombies!", COMMANDS_QUEUE);
+        if (!sqsManager.processInTransaction(new SQSManager.TransactionalProcess() {
+            @Override
+            public void process(String input) {
+                System.out.println("All right, lets stop here");
+            }}, CONQUESTS_QUEUE)) {
+
+            System.out.println("Defeat!");
+        }
     }
 
     private static void conquer(final S3Manager s3Manager,
