@@ -15,6 +15,7 @@ public class Demo {
     public static final String CLASS_NAME = Demo.class.getCanonicalName();
 
     public static final String COMMANDS_QUEUE = "commands";
+    public static final String CONQUESTS_QUEUE = "conquests";
 
     public static void main(String... args) throws IOException {
         ClientsManager clientsManager = new ClientsManager();
@@ -25,7 +26,7 @@ public class Demo {
         SQSManager sqsManager = clientsManager.getSQSEurope();
 
         if (args.length > 0) {
-            conquer(s3Manager);
+            conquer(s3Manager, sqsManager);
         } else {
             command(ec2Manager, s3Manager, iamManager, sqsManager);
         }
@@ -57,9 +58,16 @@ public class Demo {
         sqsManager.sendMessage("Hey, zombies!", COMMANDS_QUEUE);
     }
 
-    private static void conquer(S3Manager s3Manager) {
-        s3Manager.upload(
-                new ByteArrayInputStream("Was there".getBytes()),
-                BUCKET, "results/" + new Date().toString(), "text/plain");
+    private static void conquer(final S3Manager s3Manager,
+                                final SQSManager sqsManager) {
+        sqsManager.processInTransaction(new SQSManager.TransactionalProcess() {
+            @Override
+            public void process(String input) {
+                s3Manager.upload(
+                        new ByteArrayInputStream(input.getBytes()),
+                        BUCKET, "results/" + new Date().toString(), JAR_TYPE);
+                sqsManager.sendMessage("Roger!", CONQUESTS_QUEUE);
+            }
+        }, COMMANDS_QUEUE);
     }
 }
